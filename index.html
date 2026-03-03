@@ -39,4 +39,40 @@
         </tbody>
     </table>
 
-    <div
+    <div class="update-time" id="last-updated">Last updated: Waiting...</div>
+
+    <script>
+        // Function to fetch prices from CoinGecko API
+        async function fetchCryptoPrices() {
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd');
+                
+                // HTTP 에러 처리 (예: 429 Too Many Requests)
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+
+                // Update the table with fetched data
+                document.getElementById('btc-price').innerText = '$' + data.bitcoin.usd.toLocaleString();
+                document.getElementById('eth-price').innerText = '$' + data.ethereum.usd.toLocaleString();
+
+                // Show the last updated time
+                const now = new Date();
+                document.getElementById('last-updated').innerText = 'Last updated: ' + now.toLocaleTimeString();
+            } catch (error) {
+                console.error('Failed to fetch data:', error);
+                document.getElementById('last-updated').innerText = 'Data update failed (Rate limit or network error)';
+            }
+        }
+
+        // Run immediately when the page loads
+        fetchCryptoPrices();
+
+        // 🚨 수정된 부분: Auto-update every 60 seconds (60000 milliseconds)
+        setInterval(fetchCryptoPrices, 60000);
+    </script>
+
+</body>
+</html>
